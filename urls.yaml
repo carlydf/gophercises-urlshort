@@ -1,4 +1,12 @@
-- path: /urlshort
-  url: https://github.com/gophercises/urlshort
-- path: /urlshort-final
-  url: https://github.com/gophercises/urlshort/tree/solution
+- path: /mail
+  url: https://mail.google.com
+- path: /git
+  url: https://github.com/
+- path: /sgs
+  url: https://github.com/PingThingsIO/smartgridstore
+- path: /61c
+  url: https://cs61c.org/fa20/
+- path: /y
+  url: https://youtube.com
+- path: /t
+  url: https://twitter.com

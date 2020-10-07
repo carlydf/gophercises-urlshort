@@ -46,16 +46,16 @@ func YAMLHandler(ymlFile string, fallback http.Handler) (http.HandlerFunc, error
 	if readErr != nil {
 		return nil, readErr
 	}
-	
+
 	type ParsedYAML struct {
 		Path string
 		Url string
 	}
-	var arr [2]ParsedYAML
-	err := yaml.Unmarshal(content, &arr)
+	var ymlSlice []ParsedYAML
+	err := yaml.Unmarshal(content, &ymlSlice)
 	pathsToUrls := map[string]string{}
-	for i := 0; i < len(arr); i++ {
-		p := arr[i]
+	for i := 0; i < len(ymlSlice); i++ {
+		p := ymlSlice[i]
 		pathsToUrls[p.Path] = p.Url
 	}
 	return MapHandler(pathsToUrls, fallback), err
