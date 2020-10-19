@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <p>Request a short URL below</p>
+    <form action="/request" method="post">
+        <ul>
+            <li>
+                <label for="url">Full URL:</label>
+                <input type="text" id="url" name="long_url">
+            </li>
+            <li>
+                <label for="short">Short code:</label>
+                <input type="text" id="short" name="short_code">
+            </li>
+            <li class="button">
+                <button type="submit">Request URL</button>
+            </li>
+        </ul>
+    </form>
+
+</body>
+</html>
