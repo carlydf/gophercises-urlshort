@@ -20,14 +20,17 @@ func main() {
 
 	// Build the YAMLHandler using the mapHandler as the
 	// fallback
-	filePath := os.Args[1]
+	filePath := "../urls.yaml"
+	if len(os.Args) > 1 {
+		filePath = os.Args[1]
+	}
 
-	yamlHandler, err := urlshort.YAMLHandler(filePath, mapHandler)
+	yamlHandlerFunc, err := urlshort.YAMLHandler(filePath, mapHandler)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Starting the server on :8080")
-	http.ListenAndServe(":8080", yamlHandler)
+	http.ListenAndServe(":8080", yamlHandlerFunc)
 }
 
 func defaultMux() *http.ServeMux {
