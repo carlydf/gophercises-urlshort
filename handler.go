@@ -24,11 +24,20 @@ func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.Handl
 	}
 }
 
-// YAMLHandler will parse the provided YAML and then return
-// an http.HandlerFunc (which also implements http.Handler)
+// YAMLHandler will return an http.HandlerFunc (which also implements http.Handler)
 // that will attempt to map any paths to their corresponding
-// URL. If the path is not provided in the YAML, then the
+// URL. If the path is not provided in the map, then the
 // fallback http.Handler will be called instead.
+//
+// See MapHandler to create a similar http.HandlerFunc via
+// a mapping of paths to urls.
+func YAMLHandler(pathsToUrls map[string]string, fallback http.Handler) http.HandlerFunc {
+	return MapHandler(pathsToUrls, fallback)
+}
+
+
+// YAML2Map will parse the provided YAML and then return
+// a map[string]string mapping urls to their paths.
 //
 // YAML is expected to be in the format:
 //
@@ -38,10 +47,7 @@ func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.Handl
 // The only errors that can be returned all related to having
 // invalid YAML data.
 //
-// See MapHandler to create a similar http.HandlerFunc via
-// a mapping of paths to urls.
-func YAMLHandler(ymlFile string, fallback http.Handler) (http.HandlerFunc, error) {
-	// TODO: Implement this...
+func YAML2Map(ymlFile string) (map[string]string, error) {
 	content, readErr := ioutil.ReadFile(ymlFile)
 	if readErr != nil {
 		return nil, readErr
@@ -58,5 +64,5 @@ func YAMLHandler(ymlFile string, fallback http.Handler) (http.HandlerFunc, error
 		p := ymlSlice[i]
 		pathsToUrls[p.Path] = p.Url
 	}
-	return MapHandler(pathsToUrls, fallback), err
+	return pathsToUrls, err
 }

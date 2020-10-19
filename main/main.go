@@ -2,21 +2,23 @@ package main
 
 import (
 	"fmt"
+	"github.com/gophercises/urlshort"
 	"net/http"
 	"os"
-
-	"github.com/gophercises/urlshort"
+	"html/template"
 )
+
+var pathsToUrls map[string]string
 
 func main() {
 	mux := defaultMux()
 
 	// Build the MapHandler using the mux as the fallback
-	pathsToUrls := map[string]string{
+	pathsToUrls = map[string]string{
 		"/urlshort-godoc": "https://godoc.org/github.com/gophercises/urlshort",
 		"/yaml-godoc":     "https://godoc.org/gopkg.in/yaml.v2",
 	}
-	mapHandler := urlshort.MapHandler(pathsToUrls, mux)
+	hardcodedMapHandler := urlshort.MapHandler(pathsToUrls, mux)
 
 	// Build the YAMLHandler using the mapHandler as the
 	// fallback
@@ -25,10 +27,13 @@ func main() {
 		filePath = os.Args[1]
 	}
 
-	yamlHandlerFunc, err := urlshort.YAMLHandler(filePath, mapHandler)
+	var err error
+	pathsToUrls, err = urlshort.YAML2Map(filePath)
 	if err != nil {
 		panic(err)
 	}
+	yamlHandlerFunc := urlshort.YAMLHandler(pathsToUrls, hardcodedMapHandler)
+
 	fmt.Println("Starting the server on :8080")
 	http.ListenAndServe(":8080", yamlHandlerFunc)
 }
@@ -36,10 +41,33 @@ func main() {
 func defaultMux() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", start)
+	mux.HandleFunc("/request", request)
 	return mux
 }
 
 func start(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Go to localhost:8080/request to request a new short URL")
-	//fmt.Fprintln(w, "Or go to one of the pre-existing short URLs listed below:") TODO
+	fmt.Fprintln(w, "Or go to one of the pre-existing short URLs listed below:")
+	for k, v := range pathsToUrls {
+		fmt.Fprintln(w, k + " >>> " + v)
+	}
+}
+
+func request(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		t, _ := template.ParseFiles("../request.html")
+		t.Execute(w, nil)
+	} else {
+		r.ParseForm()
+		shortCode := "/" + r.Form["short_code"][0]
+		longURL := r.Form["long_url"][0]
+		prevURL, prs := pathsToUrls[shortCode]
+		pathsToUrls[shortCode] = longURL
+		if prs  {
+			fmt.Fprintf(w, shortCode + " was already registered to the URL " + prevURL + ".\n")
+			fmt.Fprintf(w, shortCode + " is now registered to " + longURL + ".\n")
+		} else {
+			fmt.Fprintf(w, shortCode + " registered successfully.") // write data to response
+		}
+	}
 }
