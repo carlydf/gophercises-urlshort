@@ -35,10 +35,11 @@ func main() {
 
 func defaultMux() *http.ServeMux {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", hello)
+	mux.HandleFunc("/", start)
 	return mux
 }
 
-func hello(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Hello, world!")
+func start(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Go to localhost:8080/request to request a new short URL")
+	//fmt.Fprintln(w, "Or go to one of the pre-existing short URLs listed below:") TODO
 }
