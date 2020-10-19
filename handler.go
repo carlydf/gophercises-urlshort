@@ -1,9 +1,11 @@
 package urlshort
 
 import (
+	"fmt"
 	"gopkg.in/yaml.v2"
 	"net/http"
 	"io/ioutil"
+	"os"
 )
 
 // MapHandler will return an http.HandlerFunc (which also
@@ -65,4 +67,22 @@ func YAML2Map(ymlFile string) (map[string]string, error) {
 		pathsToUrls[p.Path] = p.Url
 	}
 	return pathsToUrls, err
+}
+
+func Strings2YAML(path string, url string, ymlFile string) {
+	type ParsedYAML struct {
+		Path string
+		Url string
+	}
+	var ymlSlice []ParsedYAML
+	ymlSlice = append(ymlSlice, ParsedYAML{Path: path, Url: url})
+	outBytes, err := yaml.Marshal(ymlSlice)
+	if err != nil {
+		panic(err)
+	}
+	writeErr := ioutil.WriteFile(ymlFile, outBytes, os.ModeAppend) // it's overwriting the whole file instead of appending
+	if writeErr != nil {
+		fmt.Println("something went wrong with writing to the yaml")
+		panic(err)
+	}
 }

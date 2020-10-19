@@ -9,6 +9,7 @@ import (
 )
 
 var pathsToUrls map[string]string
+var filePath string
 
 func main() {
 	mux := defaultMux()
@@ -22,7 +23,7 @@ func main() {
 
 	// Build the YAMLHandler using the mapHandler as the
 	// fallback
-	filePath := "../urls.yaml"
+	filePath = "../urls.yaml"
 	if len(os.Args) > 1 {
 		filePath = os.Args[1]
 	}
@@ -63,6 +64,7 @@ func request(w http.ResponseWriter, r *http.Request) {
 		longURL := r.Form["long_url"][0]
 		prevURL, prs := pathsToUrls[shortCode]
 		pathsToUrls[shortCode] = longURL
+		urlshort.Strings2YAML(shortCode, longURL, filePath) // should do an error check here
 		if prs  {
 			fmt.Fprintf(w, shortCode + " was already registered to the URL " + prevURL + ".\n")
 			fmt.Fprintf(w, shortCode + " is now registered to " + longURL + ".\n")
